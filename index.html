@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sierra Roadtrip — Family Packing List</title>
+  <title>Eastern Sierra Shuttle Trip '26 — Family Packing List</title>
   <meta name="description" content="A shared family packing checklist for our Yosemite + Lake Tahoe campervan trip." />
   <style>
     :root {
@@ -15,23 +15,25 @@
     * { box-sizing: border-box; }
     body {
       margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Avenir Next", system-ui, sans-serif;
-      color: var(--ink);
+      color: var(--ink); position: relative;
       background: radial-gradient(1200px 500px at 50% -120px, #FDF3DD 0%, rgba(253,243,221,0) 60%), var(--cream);
       -webkit-font-smoothing: antialiased;
     }
-    .wrap { max-width: 840px; margin: 0 auto; padding: 0 18px 90px; }
+    .bg-pattern { position: fixed; inset: 0; z-index: 0; opacity: 0.055; pointer-events: none; }
+    .bg-pattern svg { display: block; width: 100%; height: 100%; }
+    .wrap { max-width: 840px; margin: 0 auto; padding: 0 18px 90px; position: relative; z-index: 1; }
     .ava { width: 100%; height: 100%; display: block; }
 
     /* ---------- Hero ---------- */
-    header.hero { position: relative; margin: 0 -18px 8px; overflow: hidden; }
-    .hero svg.scene { display: block; width: 100%; height: auto; }
+    header.hero { position: relative; width: 100%; margin: 0 0 8px; overflow: hidden; z-index: 1; }
+    .hero svg.scene { display: block; width: 100%; height: clamp(210px, 30vw, 340px); }
     .hero-title { position: absolute; left: 0; right: 0; top: 20px; text-align: center; pointer-events: none; }
     .hero-title h1 { margin: 0; font-size: clamp(26px, 6vw, 46px); color: #fff; text-shadow: 0 2px 10px rgba(43,58,74,0.35); font-weight: 800; }
     .hero-title p { margin: 6px 0 0; color: #fff; font-weight: 600; font-size: clamp(12px, 2.6vw, 16px); text-shadow: 0 1px 6px rgba(43,58,74,0.4); letter-spacing: 1.5px; text-transform: uppercase; }
 
     /* ---------- Member chip (top-right) ---------- */
     .me-chip {
-      position: absolute; top: 14px; right: 12px; display: flex; align-items: center; gap: 8px;
+      position: absolute; bottom: 38px; right: 12px; display: flex; align-items: center; gap: 8px;
       background: rgba(255,253,248,0.92); border: 1px solid rgba(255,255,255,0.6); border-radius: 999px;
       padding: 4px 12px 4px 4px; cursor: pointer; box-shadow: var(--shadow); z-index: 4;
     }
@@ -99,6 +101,23 @@
     .add-row input:focus { outline: none; border-color: var(--pine-light); }
     .add-row button { border: none; background: var(--pine); color: #fff; border-radius: 10px; padding: 0 16px; font-weight: 700; cursor: pointer; font-size: 14px; }
     .add-row button:hover { background: var(--pine-light); }
+    /* ---- Clothing carousel ---- */
+    .carousel-cat { overflow: hidden; }
+    .car-top { display: flex; align-items: center; gap: 12px; padding: 16px 18px 6px; }
+    .car-top .cat-emoji { width: 40px; height: 40px; flex: none; border-radius: 12px; display: grid; place-items: center; font-size: 20px; background: var(--cream-2); }
+    .car-top h2 { margin: 0; font-size: 17px; flex: 1; }
+    .car-nav { display: flex; align-items: center; justify-content: center; gap: 14px; padding: 2px 12px 8px; }
+    .car-arrow { width: 34px; height: 34px; flex: none; border-radius: 50%; border: 1.5px solid var(--line); background: var(--card); color: var(--pine); font-size: 22px; line-height: 1; cursor: pointer; display: grid; place-items: center; padding: 0 0 3px; transition: .12s; }
+    .car-arrow:hover { background: var(--cream-2); border-color: var(--pine-light); }
+    .car-dots { display: flex; gap: 7px; align-items: center; }
+    .cdot { width: 9px; height: 9px; border-radius: 50%; border: none; padding: 0; background: var(--line); cursor: pointer; transition: .15s; }
+    .cdot.on { background: var(--pine); transform: scale(1.25); }
+    .carousel-track { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+    .carousel-track::-webkit-scrollbar { display: none; }
+    .slide { min-width: 100%; scroll-snap-align: start; box-sizing: border-box; }
+    .slide-head { display: flex; align-items: center; gap: 10px; padding: 6px 18px 2px; }
+    .slide-head .ava-wrap { width: 30px; height: 30px; border-radius: 50%; overflow: hidden; flex: none; }
+    .slide-head h3 { margin: 0; font-size: 15px; flex: 1; }
 
     /* ---------- Gate + view-only ---------- */
     .gate-input { width: 100%; border: 1.5px solid var(--line); border-radius: 12px; padding: 12px 14px; font-size: 16px; font-family: inherit; text-align: center; margin-bottom: 6px; }
@@ -146,14 +165,79 @@
     .scrim { position: fixed; inset: 0; background: rgba(43,58,74,0.35); z-index: 39; opacity: 0; pointer-events: none; transition: opacity .25s; }
     .scrim.show { opacity: 1; pointer-events: auto; }
 
-    .conn { font-size: 11px; color: var(--granite); text-align: center; margin-top: -6px; }
-    .conn b { color: var(--pine); }
+    .conn { font-size: 12px; font-weight: 600; color: #fff; text-align: center; margin-top: 8px; letter-spacing: 0.3px; text-shadow: 0 1px 5px rgba(43,58,74,0.45); }
+    .conn b { color: #8FE6AC; }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <header class="hero">
-      <svg class="scene" viewBox="0 0 840 300" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Campervan in front of the Eastern Sierra at sunset">
+  <div class="bg-pattern" aria-hidden="true">
+    <svg width="100%" height="100%">
+      <defs>
+        <pattern id="trailIcons" width="300" height="300" patternUnits="userSpaceOnUse" patternTransform="rotate(-3)">
+          <g fill="none" stroke="#3E7C5A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <!-- camper van -->
+            <g transform="translate(16,30)">
+              <rect x="0" y="6" width="52" height="20" rx="6"/>
+              <rect x="7" y="10" width="14" height="9" rx="2"/>
+              <line x1="31" y1="6" x2="31" y2="26"/>
+              <circle cx="14" cy="29" r="4"/><circle cx="40" cy="29" r="4"/>
+            </g>
+            <!-- sequoia / redwood -->
+            <g transform="translate(126,18)">
+              <path d="M16 2 L24 16 H19 L27 28 H21 L30 40 H2 L11 28 H5 L13 16 H8 Z"/>
+              <rect x="13" y="40" width="6" height="9"/>
+            </g>
+            <!-- bear -->
+            <g transform="translate(204,26)">
+              <circle cx="20" cy="22" r="13"/>
+              <circle cx="9" cy="10" r="5"/><circle cx="31" cy="10" r="5"/>
+              <ellipse cx="20" cy="27" rx="6" ry="4.5"/>
+              <circle cx="20" cy="24.5" r="1.6"/>
+            </g>
+            <!-- backpack -->
+            <g transform="translate(26,150)">
+              <rect x="2" y="8" width="28" height="32" rx="9"/>
+              <path d="M2 20 H30"/>
+              <rect x="8" y="24" width="16" height="13" rx="4"/>
+              <line x1="9" y1="8" x2="9" y2="3"/><line x1="23" y1="8" x2="23" y2="3"/>
+            </g>
+            <!-- compass -->
+            <g transform="translate(140,150)">
+              <circle cx="18" cy="18" r="16"/>
+              <path d="M18 6 L23 18 L18 30 L13 18 Z"/>
+              <circle cx="18" cy="18" r="1.6"/>
+            </g>
+            <!-- hiking boot -->
+            <g transform="translate(232,116)">
+              <path d="M3 3 V22 Q3 26 7 26 H31 Q34 26 33 22 L32 17 Q31 13 24 12 L15 10 V3 Z"/>
+              <line x1="9" y1="8" x2="14" y2="9"/><line x1="9" y1="13" x2="16" y2="14"/>
+            </g>
+            <!-- binoculars -->
+            <g transform="translate(210,210)">
+              <circle cx="11" cy="18" r="8"/><circle cx="31" cy="18" r="8"/>
+              <line x1="17" y1="15" x2="25" y2="15"/>
+              <path d="M7 11 L6 5 H10"/><path d="M35 11 L36 5 H32"/>
+            </g>
+            <!-- sequoia / redwood (smaller) -->
+            <g transform="translate(70,228) scale(0.85)">
+              <path d="M16 2 L24 16 H19 L27 28 H21 L30 40 H2 L11 28 H5 L13 16 H8 Z"/>
+              <rect x="13" y="40" width="6" height="9"/>
+            </g>
+            <!-- camper van (small, lower) -->
+            <g transform="translate(120,256) scale(0.8)">
+              <rect x="0" y="6" width="52" height="20" rx="6"/>
+              <rect x="7" y="10" width="14" height="9" rx="2"/>
+              <line x1="31" y1="6" x2="31" y2="26"/>
+              <circle cx="14" cy="29" r="4"/><circle cx="40" cy="29" r="4"/>
+            </g>
+          </g>
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#trailIcons)"/>
+    </svg>
+  </div>
+  <header class="hero">
+      <svg class="scene" viewBox="0 0 840 300" preserveAspectRatio="xMidYMax slice" role="img" aria-label="Campervan in front of the Eastern Sierra at sunset">
         <defs>
           <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F7C56B"/><stop offset="0.45" stop-color="#F3A36A"/><stop offset="1" stop-color="#E78A6E"/></linearGradient>
           <linearGradient id="farMtn" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9AA7BC"/><stop offset="1" stop-color="#7E8CA6"/></linearGradient>
@@ -176,7 +260,7 @@
         <path d="M255,300 L378,235 L478,235 L650,300 Z" fill="#586273"/>
         <g stroke="#E9D9A8" stroke-width="4" stroke-dasharray="10 12" stroke-linecap="round"><line x1="452" y1="240" x2="478" y2="300"/></g>
         <g transform="translate(308,176)">
-          <ellipse cx="78" cy="74" rx="86" ry="9" fill="#2B3A4A" opacity="0.18"/>
+          <ellipse cx="78" cy="91" rx="86" ry="9" fill="#2B3A4A" opacity="0.18"/>
           <path d="M6,28 q0,-16 16,-18 l84,-6 q22,-1 34,14 l16,20 q4,6 4,14 l0,18 q0,8 -8,8 l-138,0 q-8,0 -8,-8 Z" fill="#E2604B"/>
           <path d="M6,28 q0,-16 16,-18 l84,-6 q22,-1 34,14 l4,5 l-142,9 Z" fill="#FBF6EC"/>
           <path d="M20,8 l96,-6 q6,0 6,6 l0,6 l-108,0 Z" fill="#F2B84B"/>
@@ -184,14 +268,15 @@
           <path d="M112,20 l14,2 q8,3 12,12 l2,6 l-28,0 Z" fill="#BFE0EA"/>
           <line x1="66" y1="44" x2="66" y2="64" stroke="#B94B39" stroke-width="2"/>
           <circle cx="150" cy="52" r="4" fill="#FFE9A8"/>
-          <circle cx="42" cy="66" r="13" fill="#2B3A4A"/><circle cx="42" cy="66" r="5.5" fill="#8895A7"/>
-          <circle cx="118" cy="66" r="13" fill="#2B3A4A"/><circle cx="118" cy="66" r="5.5" fill="#8895A7"/>
+          <circle cx="42" cy="78" r="13" fill="#2B3A4A"/><circle cx="42" cy="78" r="5.5" fill="#8895A7"/>
+          <circle cx="118" cy="78" r="13" fill="#2B3A4A"/><circle cx="118" cy="78" r="5.5" fill="#8895A7"/>
         </g>
       </svg>
-      <div class="hero-title"><h1>Sierra Roadtrip</h1><p>Yosemite &middot; Lake Tahoe &middot; Campervan</p></div>
+      <div class="hero-title"><h1>Eastern Sierra Shuttle Trip '26</h1><p>Yosemite &middot; Lake Tahoe &middot; Campervan</p><div class="conn" id="conn">connecting…</div></div>
       <div class="me-chip" id="meChip" style="display:none"><div class="ava-wrap" id="meAva"></div><div><b id="meName"></b><small>tap to switch</small></div></div>
-    </header>
+  </header>
 
+  <div class="wrap">
     <section class="summary">
       <div class="summary-stats">
         <div class="stat got"><div class="num" id="gotNum">0</div><div class="lbl">Got / Bought</div></div>
@@ -200,9 +285,8 @@
       </div>
       <div class="bar"><i class="got-fill" id="gotBar"></i></div>
       <div class="bar"><i class="packed-fill" id="packedBar"></i></div>
-      <div class="legend"><span><i class="dot got"></i> Located / purchased</span><span><i class="dot packed"></i> Packed in the van</span></div>
+      <div class="legend"><span><i class="dot got"></i> Located / purchased</span><span><i class="dot packed"></i> Packed and in the bag</span></div>
     </section>
-    <div class="conn" id="conn">connecting…</div>
 
     <div class="toolbar">
       <div class="filters" id="filters">
@@ -223,7 +307,7 @@
 
     <main id="list"></main>
     <footer class="note">
-      Tap <b>Got it</b> when an item is located or purchased, then <b>Packed</b> once it's in the van.<br/>
+      Tap <b>Got it</b> when an item is located or purchased, then <b>Packed</b> once it's in the bag / van.<br/>
       Everyone shares one live list — changes sync across all your phones, and <b>History</b> shows who did what.
     </footer>
   </div>
@@ -231,7 +315,7 @@
   <!-- edit-code gate -->
   <div class="overlay hidden" id="gate">
     <div class="picker" style="max-width:420px">
-      <h2>Sierra Roadtrip</h2>
+      <h2>Eastern Sierra Shuttle Trip '26</h2>
       <p>Enter the family code to add and check off items — or just browse the list.</p>
       <input id="gateInput" class="gate-input" type="text" placeholder="Family code" autocomplete="off" autocapitalize="none" />
       <div class="gate-err" id="gateErr"></div>
@@ -350,6 +434,7 @@
       { id: "docs",     title: "Docs & planning",      emoji: "🗺️" },
       { id: "extras",   title: "Space-savers & extras",emoji: "🎒" },
     ];
+    const PERSONAL = new Set(["clothing"]); // categories shown as a per-member carousel
 
     // ---------- State ----------
     let items = [];
@@ -359,6 +444,7 @@
     let drawerOpen = false;
     const collapsed = JSON.parse(localStorage.getItem("sierra-collapsed") || "{}");
     let me = localStorage.getItem("sierra-member");
+    let clothingSlide = 0; // which member's clothing pane is showing
 
     const PASSCODE = "sierra2026"; // family edit code — change this to whatever you like (case-insensitive)
     let canEdit = localStorage.getItem("sierra-can-edit") === "yes";
@@ -378,6 +464,9 @@
       document.getElementById("meAva").innerHTML = avatarSVG(k);
       document.getElementById("meName").textContent = k;
       hidePicker();
+      const idx = MEMBER_ORDER.indexOf(k);
+      if (idx >= 0) clothingSlide = idx;
+      render();
     }
     document.getElementById("pickerGrid").addEventListener("click", (e) => {
       const b = e.target.closest("[data-member]"); if (b) setMe(b.dataset.member);
@@ -407,6 +496,88 @@
       if (filter === "done") return it.packed;
       return true;
     }
+    function rowHTML(it) {
+      const actor = it.packed ? it.packed_by : (it.got ? it.got_by : null);
+      return `<div class="item${it.packed ? " done" : ""}">
+        <span class="item-label">${escapeHtml(it.label)}</span>
+        <div class="who ${actor ? "show" : ""}" title="${actor ? escapeHtml(actor + (it.packed ? " packed this" : " has this")) : ""}">${actor ? avatarSVG(actor) : ""}</div>
+        <button class="toggle got ${it.got ? "on" : ""} ${canEdit ? "" : "ro"}" data-id="${it.id}" data-act="got"><span class="box">${it.got ? "✓" : ""}</span>Got it</button>
+        <button class="toggle packed ${it.packed ? "on" : ""} ${canEdit ? "" : "ro"}" data-id="${it.id}" data-act="packed"><span class="box">${it.packed ? "✓" : ""}</span>Packed</button>
+        ${it.is_custom && canEdit ? `<button class="del" data-id="${it.id}" data-act="del" title="Remove">✕</button>` : ""}
+      </div>`;
+    }
+    function addRowHTML(catId, owner) {
+      const o = owner == null ? "" : owner;
+      return `<div class="add-row"><input type="text" placeholder="Add an item…" data-cat="${catId}" data-owner="${escapeHtml(o)}" /><button data-cat="${catId}" data-owner="${escapeHtml(o)}" data-act="add">Add</button></div>`;
+    }
+    function carouselHTML(cat) {
+      const slides = MEMBER_ORDER.map(member => {
+        const all = items.filter(i => i.category === cat.id && i.owner === member);
+        const visible = all.filter(passesFilter);
+        const packedCount = all.filter(i => i.packed).length;
+        const rows = visible.map(rowHTML).join("");
+        const addRow = canEdit ? addRowHTML(cat.id, member) : "";
+        return `<div class="slide" data-owner="${member}">
+          <div class="slide-head">
+            <div class="ava-wrap">${avatarSVG(member)}</div>
+            <h3>${member}'s clothes</h3>
+            <div class="cat-mini-bar"><i style="width:${all.length ? packedCount/all.length*100 : 0}%"></i></div>
+            <span class="cat-count">${packedCount}/${all.length}</span>
+          </div>
+          <div class="items">${rows}${addRow}</div>
+        </div>`;
+      }).join("");
+      const dots = MEMBER_ORDER.map((member, i) => `<button class="cdot${i === clothingSlide ? " on" : ""}" data-act="car-dot" data-idx="${i}" aria-label="${member}"></button>`).join("");
+      const allClothing = items.filter(i => i.category === cat.id);
+      const packedAll = allClothing.filter(i => i.packed).length;
+      return `<section class="cat carousel-cat">
+        <div class="car-top">
+          <div class="cat-emoji">${cat.emoji}</div>
+          <h2>${cat.title}</h2>
+          <span class="cat-count">${packedAll}/${allClothing.length} packed</span>
+        </div>
+        <div class="car-nav">
+          <button class="car-arrow" data-act="car-prev" aria-label="Previous person">‹</button>
+          <div class="car-dots">${dots}</div>
+          <button class="car-arrow" data-act="car-next" aria-label="Next person">›</button>
+        </div>
+        <div class="carousel-track" id="carTrack">${slides}</div>
+      </section>`;
+    }
+    function updateDots() {
+      document.querySelectorAll(".cdot").forEach((d, i) => d.classList.toggle("on", i === clothingSlide));
+    }
+    function onCarScroll(e) {
+      const track = e.currentTarget;
+      if (track._animating) return;
+      const idx = Math.round(track.scrollLeft / track.clientWidth);
+      if (idx !== clothingSlide) { clothingSlide = idx; updateDots(); }
+    }
+    function setupCarousel() {
+      const track = document.getElementById("carTrack");
+      if (!track) return;
+      track.scrollLeft = clothingSlide * track.clientWidth;
+      track.addEventListener("scroll", onCarScroll, { passive: true });
+    }
+    function goSlide(idx) {
+      const track = document.getElementById("carTrack");
+      if (!track) return;
+      idx = Math.max(0, Math.min(MEMBER_ORDER.length - 1, idx));
+      clothingSlide = idx;
+      updateDots();
+      const to = idx * track.clientWidth, from = track.scrollLeft, dist = to - from;
+      if (!dist) return;
+      track._animating = true;
+      track.style.scrollSnapType = "none"; // native smooth scroll fights mandatory snap; tween manually
+      const dur = 300, start = Date.now();
+      clearInterval(track._tween);
+      track._tween = setInterval(() => {
+        const p = Math.min(1, (Date.now() - start) / dur);
+        const e = p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
+        track.scrollLeft = from + dist * e;
+        if (p >= 1) { clearInterval(track._tween); track.style.scrollSnapType = ""; track._animating = false; }
+      }, 16);
+    }
     function render() {
       const list = document.getElementById("list");
       list.innerHTML = "";
@@ -414,6 +585,7 @@
       items.forEach(it => { if (it.got) totalGot++; if (it.packed) totalPacked++; });
 
       CATEGORIES.forEach(cat => {
+        if (PERSONAL.has(cat.id)) { list.insertAdjacentHTML("beforeend", carouselHTML(cat)); return; }
         const all = itemsForCat(cat.id);
         const visible = all.filter(passesFilter);
         if (visible.length === 0 && filter !== "all") return;
@@ -434,28 +606,12 @@
 
         const wrap = document.createElement("div");
         wrap.className = "items";
-        visible.forEach(it => {
-          const actor = it.packed ? it.packed_by : (it.got ? it.got_by : null);
-          const row = document.createElement("div");
-          row.className = "item" + (it.packed ? " done" : "");
-          row.innerHTML = `
-            <span class="item-label"></span>
-            <div class="who ${actor ? "show" : ""}" title="${actor ? actor + (it.packed ? " packed this" : " has this") : ""}">${actor ? avatarSVG(actor) : ""}</div>
-            <button class="toggle got ${it.got ? "on" : ""} ${canEdit ? "" : "ro"}" data-id="${it.id}" data-act="got"><span class="box">${it.got ? "✓" : ""}</span>Got it</button>
-            <button class="toggle packed ${it.packed ? "on" : ""} ${canEdit ? "" : "ro"}" data-id="${it.id}" data-act="packed"><span class="box">${it.packed ? "✓" : ""}</span>Packed</button>
-            ${it.is_custom && canEdit ? `<button class="del" data-id="${it.id}" data-act="del" title="Remove">✕</button>` : ""}`;
-          row.querySelector(".item-label").textContent = it.label;
-          wrap.appendChild(row);
-        });
-        if (canEdit) {
-          const add = document.createElement("div");
-          add.className = "add-row";
-          add.innerHTML = `<input type="text" placeholder="Add an item…" data-cat="${cat.id}" /><button data-cat="${cat.id}" data-act="add">Add</button>`;
-          wrap.appendChild(add);
-        }
+        wrap.innerHTML = visible.map(rowHTML).join("");
+        if (canEdit) wrap.insertAdjacentHTML("beforeend", addRowHTML(cat.id, null));
         el.appendChild(wrap);
         list.appendChild(el);
       });
+      setupCarousel();
 
       document.getElementById("gotNum").textContent = totalGot;
       document.getElementById("packedNum").textContent = totalPacked;
@@ -519,11 +675,11 @@
       if (error) { setConn("save failed — retrying…", false); loadAll(); return; }
       logHistory(it, field === "got" ? (val ? "got" : "ungot") : (val ? "packed" : "unpacked"));
     }
-    async function addItem(catId, label) {
+    async function addItem(catId, label, owner = null) {
       if (!canEdit) { showGate(); return; }
       label = (label || "").trim(); if (!label || !me) { if (!me) showPicker(); return; }
       const maxSort = items.reduce((m, i) => Math.max(m, i.sort_order), 0);
-      const row = { category: catId, label, is_custom: true, sort_order: maxSort + 1 };
+      const row = { category: catId, label, is_custom: true, sort_order: maxSort + 1, owner };
       const { data, error } = await supabase.from("packing_items").insert(row).select().single();
       if (error) { setConn("couldn't add item", false); return; }
       if (!items.find(i => i.id === data.id)) { items.push(data); items.sort((a,b)=>a.sort_order-b.sort_order); render(); }
@@ -543,10 +699,13 @@
       const act = btn.dataset.act;
       if (act === "got" || act === "packed") toggle(btn.dataset.id, act);
       else if (act === "del") delItem(btn.dataset.id);
-      else if (act === "add") { const inp = document.querySelector(`input[data-cat="${btn.dataset.cat}"]`); addItem(btn.dataset.cat, inp.value); inp.value = ""; }
+      else if (act === "add") { const inp = document.querySelector(`input[data-cat="${btn.dataset.cat}"][data-owner="${btn.dataset.owner || ""}"]`); addItem(btn.dataset.cat, inp.value, btn.dataset.owner || null); inp.value = ""; }
+      else if (act === "car-prev") goSlide(clothingSlide - 1);
+      else if (act === "car-next") goSlide(clothingSlide + 1);
+      else if (act === "car-dot") goSlide(parseInt(btn.dataset.idx, 10));
     });
     document.getElementById("list").addEventListener("keydown", (e) => {
-      if (e.key === "Enter" && e.target.matches("input[data-cat]")) { addItem(e.target.dataset.cat, e.target.value); e.target.value = ""; }
+      if (e.key === "Enter" && e.target.matches("input[data-cat]")) { addItem(e.target.dataset.cat, e.target.value, e.target.dataset.owner || null); e.target.value = ""; }
     });
     document.getElementById("filters").addEventListener("click", (e) => {
       const chip = e.target.closest(".chip"); if (!chip) return;
