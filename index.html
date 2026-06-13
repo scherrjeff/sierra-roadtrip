@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sierra Roadtrip — Family Packing List</title>
+  <meta name="description" content="A shared family packing checklist for our Yosemite + Lake Tahoe campervan trip." />
+  <style>
+    :root {
+      --cream: #FBF6EC; --cream-2: #F3EAD6; --ink: #2B3A4A; --ink-soft: #54657A;
+      --granite: #8895A7; --pine: #3E7C5A; --pine-light: #5B9A78; --gold: #F2B84B;
+      --sunset: #E07A52; --sky: #9BC4D6; --line: #E4D8BE; --card: #FFFDF8;
+      --shadow: 0 6px 20px rgba(43,58,74,0.08); --shadow-lg: 0 14px 40px rgba(43,58,74,0.18);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Avenir Next", system-ui, sans-serif;
+      color: var(--ink);
+      background: radial-gradient(1200px 500px at 50% -120px, #FDF3DD 0%, rgba(253,243,221,0) 60%), var(--cream);
+      -webkit-font-smoothing: antialiased;
+    }
+    .wrap { max-width: 840px; margin: 0 auto; padding: 0 18px 90px; }
+    .ava { width: 100%; height: 100%; display: block; }
+
+    /* ---------- Hero ---------- */
+    header.hero { position: relative; margin: 0 -18px 8px; overflow: hidden; }
+    .hero svg.scene { display: block; width: 100%; height: auto; }
+    .hero-title { position: absolute; left: 0; right: 0; top: 20px; text-align: center; pointer-events: none; }
+    .hero-title h1 { margin: 0; font-size: clamp(26px, 6vw, 46px); color: #fff; text-shadow: 0 2px 10px rgba(43,58,74,0.35); font-weight: 800; }
+    .hero-title p { margin: 6px 0 0; color: #fff; font-weight: 600; font-size: clamp(12px, 2.6vw, 16px); text-shadow: 0 1px 6px rgba(43,58,74,0.4); letter-spacing: 1.5px; text-transform: uppercase; }
+
+    /* ---------- Member chip (top-right) ---------- */
+    .me-chip {
+      position: absolute; top: 14px; right: 12px; display: flex; align-items: center; gap: 8px;
+      background: rgba(255,253,248,0.92); border: 1px solid rgba(255,255,255,0.6); border-radius: 999px;
+      padding: 4px 12px 4px 4px; cursor: pointer; box-shadow: var(--shadow); z-index: 4;
+    }
+    .me-chip .ava-wrap { width: 34px; height: 34px; border-radius: 50%; overflow: hidden; flex: none; }
+    .me-chip b { font-size: 14px; }
+    .me-chip small { color: var(--ink-soft); font-size: 11px; display: block; margin-top: -2px; }
+
+    /* ---------- Summary ---------- */
+    .summary { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 18px 20px; box-shadow: var(--shadow); margin-top: -28px; position: relative; z-index: 3; }
+    .summary-stats { display: flex; gap: 22px; flex-wrap: wrap; }
+    .stat .num { font-size: 24px; font-weight: 800; line-height: 1; }
+    .stat .lbl { font-size: 12px; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.6px; margin-top: 4px; }
+    .stat.got .num { color: var(--gold); } .stat.packed .num { color: var(--pine); }
+    .bar { height: 12px; border-radius: 999px; background: var(--cream-2); overflow: hidden; margin-top: 10px; border: 1px solid var(--line); }
+    .bar i { display: block; height: 100%; width: 0; transition: width .3s ease; }
+    .bar .got-fill { background: linear-gradient(90deg, #F7C766, var(--gold)); }
+    .bar .packed-fill { background: linear-gradient(90deg, var(--pine-light), var(--pine)); }
+    .legend { display: flex; gap: 18px; margin-top: 10px; font-size: 12px; color: var(--ink-soft); flex-wrap: wrap; }
+    .legend span { display: inline-flex; align-items: center; gap: 6px; }
+    .dot { width: 12px; height: 12px; border-radius: 4px; display: inline-block; }
+    .dot.got { background: var(--gold); } .dot.packed { background: var(--pine); }
+
+    /* ---------- Toolbar ---------- */
+    .toolbar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin: 22px 0 14px; }
+    .filters { display: flex; gap: 6px; flex-wrap: wrap; }
+    .chip { border: 1px solid var(--line); background: var(--card); color: var(--ink-soft); padding: 7px 13px; border-radius: 999px; font-size: 13px; font-weight: 600; cursor: pointer; transition: .15s; }
+    .chip:hover { border-color: var(--granite); }
+    .chip.active { background: var(--ink); color: #fff; border-color: var(--ink); }
+    .spacer { flex: 1; }
+    .btn { border: 1px solid var(--line); background: var(--card); color: var(--ink-soft); padding: 7px 13px; border-radius: 999px; font-size: 13px; cursor: pointer; font-weight: 600; position: relative; }
+    .btn:hover { border-color: var(--granite); color: var(--ink); }
+    .btn .badge { position: absolute; top: -6px; right: -6px; background: var(--sunset); color: #fff; font-size: 10px; min-width: 16px; height: 16px; border-radius: 999px; display: grid; place-items: center; padding: 0 4px; }
+    .btn-reset:hover { color: var(--sunset); border-color: var(--sunset); }
+
+    /* ---------- Category cards ---------- */
+    .cat { background: var(--card); border: 1px solid var(--line); border-radius: 18px; box-shadow: var(--shadow); margin-bottom: 16px; overflow: hidden; }
+    .cat-head { display: flex; align-items: center; gap: 12px; padding: 16px 18px; cursor: pointer; user-select: none; }
+    .cat-emoji { width: 40px; height: 40px; flex: none; border-radius: 12px; display: grid; place-items: center; font-size: 20px; background: var(--cream-2); }
+    .cat-head h2 { margin: 0; font-size: 17px; flex: 1; }
+    .cat-count { font-size: 12px; color: var(--ink-soft); font-weight: 600; white-space: nowrap; }
+    .cat-mini-bar { height: 6px; width: 64px; border-radius: 999px; background: var(--cream-2); overflow: hidden; flex: none; }
+    .cat-mini-bar i { display: block; height: 100%; background: var(--pine-light); width: 0; }
+    .chev { transition: .2s; color: var(--granite); flex: none; }
+    .cat.collapsed .chev { transform: rotate(-90deg); }
+    .cat.collapsed .items { display: none; }
+    .items { padding: 4px 10px 12px; }
+    .item { display: flex; align-items: center; gap: 9px; padding: 9px 8px; border-radius: 12px; }
+    .item:hover { background: var(--cream); }
+    .item.done { opacity: 0.6; }
+    .item-label { flex: 1; font-size: 15px; }
+    .item.done .item-label { text-decoration: line-through; text-decoration-color: var(--granite); }
+    .who { width: 22px; height: 22px; border-radius: 50%; overflow: hidden; flex: none; opacity: 0; }
+    .who.show { opacity: 1; }
+    .item .del { opacity: 0; border: none; background: none; color: var(--granite); cursor: pointer; font-size: 16px; padding: 2px 6px; border-radius: 6px; }
+    .item:hover .del { opacity: 1; }
+    .item .del:hover { color: var(--sunset); background: var(--cream-2); }
+    .toggle { border: 1.5px solid var(--line); background: var(--card); border-radius: 999px; padding: 5px 11px 5px 8px; font-size: 12.5px; font-weight: 700; color: var(--ink-soft); cursor: pointer; display: inline-flex; align-items: center; gap: 5px; transition: .12s; white-space: nowrap; }
+    .toggle .box { width: 15px; height: 15px; border-radius: 5px; border: 1.5px solid var(--granite); display: grid; place-items: center; color: #fff; font-size: 11px; line-height: 1; }
+    .toggle.got.on { background: #FCEFCC; border-color: var(--gold); color: #8a6410; }
+    .toggle.got.on .box { background: var(--gold); border-color: var(--gold); }
+    .toggle.packed.on { background: #E3F1E7; border-color: var(--pine); color: #235c3f; }
+    .toggle.packed.on .box { background: var(--pine); border-color: var(--pine); }
+    .add-row { display: flex; gap: 8px; padding: 6px 8px 4px; }
+    .add-row input { flex: 1; border: 1px dashed var(--line); background: transparent; border-radius: 10px; padding: 9px 12px; font-size: 14px; color: var(--ink); font-family: inherit; }
+    .add-row input:focus { outline: none; border-color: var(--pine-light); }
+    .add-row button { border: none; background: var(--pine); color: #fff; border-radius: 10px; padding: 0 16px; font-weight: 700; cursor: pointer; font-size: 14px; }
+    .add-row button:hover { background: var(--pine-light); }
+
+    /* ---------- Gate + view-only ---------- */
+    .gate-input { width: 100%; border: 1.5px solid var(--line); border-radius: 12px; padding: 12px 14px; font-size: 16px; font-family: inherit; text-align: center; margin-bottom: 6px; }
+    .gate-input:focus { outline: none; border-color: var(--pine-light); }
+    .gate-err { color: var(--sunset); font-size: 13px; min-height: 18px; margin-bottom: 8px; }
+    .gate-go { width: 100%; border: none; background: var(--pine); color: #fff; padding: 12px; border-radius: 12px; font-weight: 700; font-size: 15px; cursor: pointer; }
+    .gate-go:hover { background: var(--pine-light); }
+    .gate-skip { width: 100%; border: none; background: none; color: var(--ink-soft); padding: 10px; font-size: 14px; cursor: pointer; margin-top: 4px; font-weight: 600; }
+    .gate-skip:hover { color: var(--ink); }
+    .view-banner { display: flex; align-items: center; gap: 10px; background: #FDF1D6; border: 1px solid var(--gold); color: #7a5a12; border-radius: 14px; padding: 10px 14px; font-size: 13.5px; margin-bottom: 14px; line-height: 1.4; }
+    .view-banner button { margin-left: auto; border: 1px solid var(--gold); background: #fff; color: #7a5a12; border-radius: 999px; padding: 6px 13px; font-weight: 700; cursor: pointer; font-size: 13px; white-space: nowrap; }
+    .view-banner button:hover { background: var(--gold); color: #fff; }
+    .toggle.ro { cursor: default; opacity: 0.8; }
+
+    footer.note { text-align: center; color: var(--ink-soft); font-size: 13px; margin-top: 26px; line-height: 1.6; }
+    footer.note b { color: var(--ink); }
+
+    /* ---------- Member picker overlay ---------- */
+    .overlay { position: fixed; inset: 0; background: rgba(43,58,74,0.55); backdrop-filter: blur(4px); display: grid; place-items: center; z-index: 50; padding: 20px; }
+    .overlay.hidden { display: none; }
+    .picker { background: var(--card); border-radius: 24px; box-shadow: var(--shadow-lg); padding: 26px; max-width: 520px; width: 100%; text-align: center; }
+    .picker h2 { margin: 0 0 4px; font-size: 22px; }
+    .picker p { margin: 0 0 20px; color: var(--ink-soft); font-size: 14px; }
+    .picker-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+    .pick { border: 2px solid var(--line); background: var(--cream); border-radius: 18px; padding: 16px 12px; cursor: pointer; transition: .15s; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+    .pick:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
+    .pick .ava-wrap { width: 88px; height: 88px; border-radius: 50%; overflow: hidden; }
+    .pick b { font-size: 17px; }
+    @media (max-width: 420px) { .picker-grid { grid-template-columns: repeat(2,1fr); } .pick .ava-wrap { width: 70px; height: 70px; } }
+
+    /* ---------- History drawer ---------- */
+    .drawer { position: fixed; top: 0; right: 0; bottom: 0; width: min(380px, 90vw); background: var(--card); box-shadow: var(--shadow-lg); z-index: 40; transform: translateX(100%); transition: transform .25s ease; display: flex; flex-direction: column; }
+    .drawer.open { transform: translateX(0); }
+    .drawer-head { padding: 18px 20px; border-bottom: 1px solid var(--line); display: flex; align-items: center; gap: 10px; }
+    .drawer-head h3 { margin: 0; font-size: 18px; flex: 1; }
+    .drawer-head button { border: none; background: var(--cream-2); width: 30px; height: 30px; border-radius: 50%; cursor: pointer; font-size: 16px; color: var(--ink-soft); }
+    .feed { overflow-y: auto; padding: 8px 14px 24px; }
+    .ev { display: flex; gap: 10px; padding: 10px 6px; border-bottom: 1px solid #F3ECDC; align-items: flex-start; }
+    .ev .ava-wrap { width: 30px; height: 30px; border-radius: 50%; overflow: hidden; flex: none; margin-top: 2px; }
+    .ev .txt { font-size: 13.5px; line-height: 1.4; }
+    .ev .txt .verb { font-weight: 700; }
+    .ev .txt .when { color: var(--granite); font-size: 11.5px; display: block; margin-top: 2px; }
+    .verb.got { color: #b07d12; } .verb.packed { color: var(--pine); }
+    .verb.unpacked, .verb.ungot, .verb.removed { color: var(--sunset); }
+    .scrim { position: fixed; inset: 0; background: rgba(43,58,74,0.35); z-index: 39; opacity: 0; pointer-events: none; transition: opacity .25s; }
+    .scrim.show { opacity: 1; pointer-events: auto; }
+
+    .conn { font-size: 11px; color: var(--granite); text-align: center; margin-top: -6px; }
+    .conn b { color: var(--pine); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="hero">
+      <svg class="scene" viewBox="0 0 840 300" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Campervan in front of the Eastern Sierra at sunset">
+        <defs>
+          <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F7C56B"/><stop offset="0.45" stop-color="#F3A36A"/><stop offset="1" stop-color="#E78A6E"/></linearGradient>
+          <linearGradient id="farMtn" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9AA7BC"/><stop offset="1" stop-color="#7E8CA6"/></linearGradient>
+          <linearGradient id="nearMtn" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5E6E86"/><stop offset="1" stop-color="#46566E"/></linearGradient>
+        </defs>
+        <rect width="840" height="300" fill="url(#sky)"/>
+        <circle cx="420" cy="120" r="46" fill="#FFE9A8" opacity="0.95"/><circle cx="420" cy="120" r="62" fill="#FFE9A8" opacity="0.25"/>
+        <path d="M0,150 L70,95 L120,135 L185,70 L245,130 L310,60 L380,120 L440,55 L510,120 L575,80 L655,135 L725,90 L800,140 L840,115 L840,300 L0,300 Z" fill="url(#farMtn)"/>
+        <path d="M185,70 L165,92 L177,90 L191,100 L201,88 L213,98 L205,82 Z" fill="#F4F0E6" opacity="0.9"/>
+        <path d="M310,60 L292,84 L304,80 L318,92 L330,78 L340,90 L328,70 Z" fill="#F4F0E6" opacity="0.9"/>
+        <path d="M440,55 L420,82 L434,78 L448,90 L462,76 L472,88 L460,68 Z" fill="#F4F0E6" opacity="0.9"/>
+        <path d="M0,205 L95,160 L165,200 L255,150 L350,205 L440,165 L530,210 L630,160 L730,205 L840,175 L840,300 L0,300 Z" fill="url(#nearMtn)"/>
+        <rect y="225" width="840" height="75" fill="#6E9A5E"/><rect y="225" width="840" height="14" fill="#7CAA69"/>
+        <g fill="#2F5D3F">
+          <g transform="translate(72,205)"><path d="M0,40 L-14,40 L0,8 L14,40 Z"/><path d="M0,26 L-11,26 L0,2 L11,26 Z"/><rect x="-3" y="40" width="6" height="10" fill="#5b4632"/></g>
+          <g transform="translate(124,212)"><path d="M0,34 L-11,34 L0,8 L11,34 Z"/><rect x="-2.5" y="34" width="5" height="8" fill="#5b4632"/></g>
+          <g transform="translate(736,205)"><path d="M0,42 L-15,42 L0,6 L15,42 Z"/><path d="M0,26 L-11,26 L0,2 L11,26 Z"/><rect x="-3" y="42" width="6" height="10" fill="#5b4632"/></g>
+          <g transform="translate(782,214)"><path d="M0,32 L-10,32 L0,9 L10,32 Z"/><rect x="-2.5" y="32" width="5" height="8" fill="#5b4632"/></g>
+        </g>
+        <path d="M255,300 L378,235 L478,235 L650,300 Z" fill="#586273"/>
+        <g stroke="#E9D9A8" stroke-width="4" stroke-dasharray="10 12" stroke-linecap="round"><line x1="452" y1="240" x2="478" y2="300"/></g>
+        <g transform="translate(308,176)">
+          <ellipse cx="78" cy="74" rx="86" ry="9" fill="#2B3A4A" opacity="0.18"/>
+          <path d="M6,28 q0,-16 16,-18 l84,-6 q22,-1 34,14 l16,20 q4,6 4,14 l0,18 q0,8 -8,8 l-138,0 q-8,0 -8,-8 Z" fill="#E2604B"/>
+          <path d="M6,28 q0,-16 16,-18 l84,-6 q22,-1 34,14 l4,5 l-142,9 Z" fill="#FBF6EC"/>
+          <path d="M20,8 l96,-6 q6,0 6,6 l0,6 l-108,0 Z" fill="#F2B84B"/>
+          <rect x="22" y="20" width="40" height="22" rx="4" fill="#BFE0EA"/><rect x="70" y="20" width="34" height="22" rx="4" fill="#BFE0EA"/>
+          <path d="M112,20 l14,2 q8,3 12,12 l2,6 l-28,0 Z" fill="#BFE0EA"/>
+          <line x1="66" y1="44" x2="66" y2="64" stroke="#B94B39" stroke-width="2"/>
+          <circle cx="150" cy="52" r="4" fill="#FFE9A8"/>
+          <circle cx="42" cy="66" r="13" fill="#2B3A4A"/><circle cx="42" cy="66" r="5.5" fill="#8895A7"/>
+          <circle cx="118" cy="66" r="13" fill="#2B3A4A"/><circle cx="118" cy="66" r="5.5" fill="#8895A7"/>
+        </g>
+      </svg>
+      <div class="hero-title"><h1>Sierra Roadtrip</h1><p>Yosemite &middot; Lake Tahoe &middot; Campervan</p></div>
+      <div class="me-chip" id="meChip" style="display:none"><div class="ava-wrap" id="meAva"></div><div><b id="meName"></b><small>tap to switch</small></div></div>
+    </header>
+
+    <section class="summary">
+      <div class="summary-stats">
+        <div class="stat got"><div class="num" id="gotNum">0</div><div class="lbl">Got / Bought</div></div>
+        <div class="stat packed"><div class="num" id="packedNum">0</div><div class="lbl">Packed</div></div>
+        <div class="stat"><div class="num" id="totalNum">0</div><div class="lbl">Total items</div></div>
+      </div>
+      <div class="bar"><i class="got-fill" id="gotBar"></i></div>
+      <div class="bar"><i class="packed-fill" id="packedBar"></i></div>
+      <div class="legend"><span><i class="dot got"></i> Located / purchased</span><span><i class="dot packed"></i> Packed in the van</span></div>
+    </section>
+    <div class="conn" id="conn">connecting…</div>
+
+    <div class="toolbar">
+      <div class="filters" id="filters">
+        <button class="chip active" data-filter="all">All</button>
+        <button class="chip" data-filter="togget">To get</button>
+        <button class="chip" data-filter="topack">To pack</button>
+        <button class="chip" data-filter="done">Packed</button>
+      </div>
+      <div class="spacer"></div>
+      <button class="btn" id="historyBtn">History<span class="badge" id="histBadge" style="display:none">0</span></button>
+      <button class="btn btn-reset" id="resetBtn">Reset</button>
+    </div>
+
+    <div class="view-banner" id="viewBanner" style="display:none">
+      <span>👀 <b>View-only.</b> Browse all you like — enter the family code to add or check off items.</span>
+      <button id="editBtn">Enter code</button>
+    </div>
+
+    <main id="list"></main>
+    <footer class="note">
+      Tap <b>Got it</b> when an item is located or purchased, then <b>Packed</b> once it's in the van.<br/>
+      Everyone shares one live list — changes sync across all your phones, and <b>History</b> shows who did what.
+    </footer>
+  </div>
+
+  <!-- edit-code gate -->
+  <div class="overlay hidden" id="gate">
+    <div class="picker" style="max-width:420px">
+      <h2>Sierra Roadtrip</h2>
+      <p>Enter the family code to add and check off items — or just browse the list.</p>
+      <input id="gateInput" class="gate-input" type="text" placeholder="Family code" autocomplete="off" autocapitalize="none" />
+      <div class="gate-err" id="gateErr"></div>
+      <button class="gate-go" id="gateGo">Unlock editing</button>
+      <button class="gate-skip" id="gateSkip">Just viewing →</button>
+    </div>
+  </div>
+
+  <!-- member picker -->
+  <div class="overlay hidden" id="picker">
+    <div class="picker">
+      <h2>Who's packing?</h2>
+      <p>Pick yourself so the list knows who checked off each item.</p>
+      <div class="picker-grid" id="pickerGrid"></div>
+    </div>
+  </div>
+
+  <!-- history drawer -->
+  <div class="scrim" id="scrim"></div>
+  <aside class="drawer" id="drawer">
+    <div class="drawer-head"><h3>Activity</h3><button id="drawerClose">✕</button></div>
+    <div class="feed" id="feed"></div>
+  </aside>
+
+  <script type="module">
+    import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+    const SUPABASE_URL = "https://wrdtwfaoordyuscnragu.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_o45YZOMVhgPokUniyCO_zw_8pUHqW8_";
+    const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    // ---------- Members + avatars ----------
+    const MEMBERS = {
+      Sarah:  { bg: "#CFE6D6", ring: "#5B9A78" },
+      Jeff:   { bg: "#CBD9E6", ring: "#46566E" },
+      Juno:   { bg: "#FBE2C4", ring: "#E0A24B" },
+      Django: { bg: "#CDE8F0", ring: "#4E7CA8" },
+    };
+    const MEMBER_ORDER = ["Sarah", "Jeff", "Juno", "Django"];
+    let _uid = 0;
+
+    function avatarInner(key) {
+      switch (key) {
+        case "Sarah": return `
+          <path d="M30,56 q0,-36 30,-36 q30,0 30,36 l0,34 q0,8 -8,12 q4,-22 0,-40 q-22,12 -44,0 q-4,18 0,40 q-8,-4 -8,-12 Z" fill="#ECD188"/>
+          <path d="M24,120 q4,-28 36,-28 q32,0 36,28 Z" fill="#E2856B"/>
+          <rect x="53" y="76" width="14" height="14" fill="#F3D4B9"/>
+          <ellipse cx="60" cy="58" rx="23" ry="26" fill="#F3D4B9"/>
+          <path d="M37,53 q1,-31 23,-31 q22,0 23,31 q-7,-15 -23,-15 q-16,0 -23,15 Z" fill="#ECD188"/>
+          <path d="M37,52 q-4,16 -1,28 q3,1 5,1 q-3,-16 -1,-30 Z" fill="#ECD188"/>
+          <path d="M83,52 q4,16 1,28 q-3,1 -5,1 q3,-16 1,-30 Z" fill="#ECD188"/>
+          <circle cx="51" cy="57" r="3" fill="#fff"/><circle cx="51" cy="57" r="2" fill="#9CC47C"/><circle cx="51" cy="57" r="0.9" fill="#2B3A4A"/>
+          <circle cx="69" cy="57" r="3" fill="#fff"/><circle cx="69" cy="57" r="2" fill="#9CC47C"/><circle cx="69" cy="57" r="0.9" fill="#2B3A4A"/>
+          <g fill="none" stroke="#A6692F" stroke-width="2.3"><rect x="42" y="50" width="16" height="13" rx="6"/><rect x="62" y="50" width="16" height="13" rx="6"/><path d="M58,55 h4"/></g>
+          <circle cx="44" cy="65" r="3" fill="#E79B86" opacity="0.5"/><circle cx="76" cy="65" r="3" fill="#E79B86" opacity="0.5"/>
+          <path d="M53,69 q7,5 14,0" fill="none" stroke="#C56A4E" stroke-width="2" stroke-linecap="round"/>`;
+        case "Jeff": return `
+          <path d="M24,120 q4,-28 36,-28 q32,0 36,28 Z" fill="#46566E"/>
+          <rect x="53" y="76" width="14" height="14" fill="#ECC2A0"/>
+          <ellipse cx="60" cy="58" rx="23" ry="26" fill="#ECC2A0"/>
+          <path d="M37,52 q-3,14 0,26 q4,2 6,2 q-3,-16 0,-28 Z" fill="#9AA0A8"/>
+          <path d="M83,52 q3,14 0,26 q-4,2 -6,2 q3,-16 0,-28 Z" fill="#9AA0A8"/>
+          <path d="M38,57 q2,29 22,29 q20,0 22,-29 q-6,17 -22,17 q-16,0 -22,-17 Z" fill="#B9BEC6"/>
+          <path d="M49,66 q11,5 22,0 q-11,8 -22,0 Z" fill="#B9BEC6"/>
+          <path d="M54,70 q6,3 12,0" fill="none" stroke="#8a6047" stroke-width="1.6" stroke-linecap="round"/>
+          <circle cx="51" cy="55" r="3" fill="#fff"/><circle cx="51" cy="55" r="1.5" fill="#3a2f2a"/>
+          <circle cx="69" cy="55" r="3" fill="#fff"/><circle cx="69" cy="55" r="1.5" fill="#3a2f2a"/>
+          <g fill="none" stroke="#2B3A4A" stroke-width="2.6"><rect x="42" y="49" width="16" height="13" rx="3"/><rect x="62" y="49" width="16" height="13" rx="3"/><path d="M58,54 h4"/></g>
+          <path d="M31,41 q3,-23 29,-23 q26,0 29,23 q-29,-11 -58,0 Z" fill="#3E7C5A"/>
+          <path d="M29,41 q31,-9 62,0 q2,4 -2,7 q-29,-9 -58,0 q-4,-3 -2,-7 Z" fill="#356B4E"/>
+          <path d="M31,42 q-13,1 -18,7 q0,4 6,4 q11,-7 20,-7 Z" fill="#356B4E"/>
+          <circle cx="60" cy="19" r="2.6" fill="#356B4E"/>`;
+        case "Juno": return `
+          <path d="M80,40 q24,8 21,36 q-2,24 -16,38 q-3,-1 -7,-1 q12,-18 10,-38 q-2,-22 -16,-30 Z" fill="#D9BC7E"/>
+          <ellipse cx="82" cy="42" rx="6" ry="5" fill="#E0728E"/>
+          <path d="M24,120 q4,-28 36,-28 q32,0 36,28 Z" fill="#6FB3C4"/>
+          <rect x="51" y="78" width="14" height="12" fill="#F4D3B8"/>
+          <ellipse cx="58" cy="59" rx="23" ry="25" fill="#F4D3B8"/>
+          <path d="M34,55 q-3,-35 24,-35 q27,0 26,31 q-3,-6 -7,-8 q-6,-11 -19,-11 q-18,0 -22,23 Z" fill="#D9BC7E"/>
+          <path d="M34,53 q-3,12 0,22 q3,1 5,1 q-3,-15 -1,-25 Z" fill="#D9BC7E"/>
+          <circle cx="49" cy="58" r="3.2" fill="#fff"/><circle cx="49" cy="58" r="2" fill="#7A4B2A"/><circle cx="49" cy="58" r="0.9" fill="#2B1c12"/>
+          <circle cx="67" cy="58" r="3.2" fill="#fff"/><circle cx="67" cy="58" r="2" fill="#7A4B2A"/><circle cx="67" cy="58" r="0.9" fill="#2B1c12"/>
+          <g stroke="#3a2a1c" stroke-width="1" stroke-linecap="round"><path d="M45,54 l-2,-2.5"/><path d="M49,53 l0,-2.5"/><path d="M53,54 l2,-2.5"/><path d="M63,54 l-2,-2.5"/><path d="M67,53 l0,-2.5"/><path d="M71,54 l2,-2.5"/></g>
+          <g fill="none" stroke="#C56A4E" stroke-width="2.1"><circle cx="49" cy="58" r="8"/><circle cx="67" cy="58" r="8"/><path d="M57,58 h2"/></g>
+          <circle cx="42" cy="66" r="3.5" fill="#E98E97" opacity="0.55"/><circle cx="74" cy="66" r="3.5" fill="#E98E97" opacity="0.55"/>
+          <path d="M51,70 q7,5 14,0" fill="none" stroke="#C56A4E" stroke-width="2" stroke-linecap="round"/>`;
+        case "Django": return `
+          <path d="M24,120 q4,-28 36,-28 q32,0 36,28 Z" fill="#4E7CA8"/>
+          <rect x="53" y="78" width="14" height="12" fill="#EFC9A6"/>
+          <ellipse cx="60" cy="58" rx="23" ry="26" fill="#EFC9A6"/>
+          <path d="M33,54 q-5,-39 27,-39 q32,0 27,39 q-3,-7 -8,-10 q-3,9 -12,9 q-3,-7 -11,-7 q-3,8 -12,7 q-7,-1 -9,-9 q-4,5 -2,13 Z" fill="#EBCB73"/>
+          <path d="M37,30 q9,7 7,21" fill="none" stroke="#DDB95E" stroke-width="2" stroke-linecap="round"/>
+          <path d="M83,32 q-7,8 -6,20" fill="none" stroke="#DDB95E" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="51" cy="57" r="3" fill="#fff"/><circle cx="51" cy="57" r="2" fill="#5B9AD6"/><circle cx="51" cy="57" r="0.9" fill="#22324a"/>
+          <circle cx="69" cy="57" r="3" fill="#fff"/><circle cx="69" cy="57" r="2" fill="#5B9AD6"/><circle cx="69" cy="57" r="0.9" fill="#22324a"/>
+          <path d="M46,51 q5,-2 9,0" stroke="#DDB95E" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+          <path d="M65,51 q5,-2 9,0" stroke="#DDB95E" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+          <path d="M53,69 q7,4 14,0" fill="none" stroke="#C58A6A" stroke-width="2" stroke-linecap="round"/>`;
+      }
+      return "";
+    }
+    function avatarSVG(key) {
+      const m = MEMBERS[key]; const id = ++_uid;
+      return `<svg class="ava" viewBox="0 0 120 120"><defs><clipPath id="cl${id}"><circle cx="60" cy="60" r="56"/></clipPath></defs>`
+        + `<g clip-path="url(#cl${id})"><rect width="120" height="120" fill="${m.bg}"/>${avatarInner(key)}</g>`
+        + `<circle cx="60" cy="60" r="56" fill="none" stroke="${m.ring}" stroke-width="5"/></svg>`;
+    }
+
+    // ---------- Categories metadata ----------
+    const CATEGORIES = [
+      { id: "clothing", title: "Clothing (layer up!)", emoji: "🧥" },
+      { id: "sleep",    title: "Sleep & van comfort",  emoji: "🛏️" },
+      { id: "kitchen",  title: "Kitchen & food",       emoji: "🍳" },
+      { id: "outdoors", title: "Yosemite & outdoors",  emoji: "🥾" },
+      { id: "tech",     title: "Tech & charging",      emoji: "🔌" },
+      { id: "docs",     title: "Docs & planning",      emoji: "🗺️" },
+      { id: "extras",   title: "Space-savers & extras",emoji: "🎒" },
+    ];
+
+    // ---------- State ----------
+    let items = [];
+    let historyEvents = [];
+    let filter = "all";
+    let unread = 0;
+    let drawerOpen = false;
+    const collapsed = JSON.parse(localStorage.getItem("sierra-collapsed") || "{}");
+    let me = localStorage.getItem("sierra-member");
+
+    const PASSCODE = "sierra2026"; // family edit code — change this to whatever you like (case-insensitive)
+    let canEdit = localStorage.getItem("sierra-can-edit") === "yes";
+
+    // ---------- Member picker ----------
+    function renderPicker() {
+      const grid = document.getElementById("pickerGrid");
+      grid.innerHTML = MEMBER_ORDER.map(k =>
+        `<button class="pick" data-member="${k}"><div class="ava-wrap">${avatarSVG(k)}</div><b>${k}</b></button>`
+      ).join("");
+    }
+    function showPicker() { document.getElementById("picker").classList.remove("hidden"); }
+    function hidePicker() { document.getElementById("picker").classList.add("hidden"); }
+    function setMe(k) {
+      me = k; localStorage.setItem("sierra-member", k);
+      document.getElementById("meChip").style.display = "flex";
+      document.getElementById("meAva").innerHTML = avatarSVG(k);
+      document.getElementById("meName").textContent = k;
+      hidePicker();
+    }
+    document.getElementById("pickerGrid").addEventListener("click", (e) => {
+      const b = e.target.closest("[data-member]"); if (b) setMe(b.dataset.member);
+    });
+    document.getElementById("meChip").addEventListener("click", showPicker);
+
+    // ---------- Data load ----------
+    async function loadAll() {
+      const { data: its, error } = await supabase.from("packing_items").select("*").order("sort_order");
+      if (error) { setConn("offline — couldn't load", false); return; }
+      items = its || [];
+      const { data: hist } = await supabase.from("packing_history").select("*").order("created_at", { ascending: false }).limit(60);
+      historyEvents = hist || [];
+      render(); renderFeed();
+      setConn("live — synced across devices", true);
+    }
+    function setConn(text, ok) {
+      const el = document.getElementById("conn");
+      el.innerHTML = ok ? `<b>● </b>${text}` : text;
+    }
+
+    // ---------- Render list ----------
+    function itemsForCat(catId) { return items.filter(i => i.category === catId); }
+    function passesFilter(it) {
+      if (filter === "togget") return !it.got;
+      if (filter === "topack") return it.got && !it.packed;
+      if (filter === "done") return it.packed;
+      return true;
+    }
+    function render() {
+      const list = document.getElementById("list");
+      list.innerHTML = "";
+      let totalGot = 0, totalPacked = 0, total = items.length;
+      items.forEach(it => { if (it.got) totalGot++; if (it.packed) totalPacked++; });
+
+      CATEGORIES.forEach(cat => {
+        const all = itemsForCat(cat.id);
+        const visible = all.filter(passesFilter);
+        if (visible.length === 0 && filter !== "all") return;
+        const packedCount = all.filter(i => i.packed).length;
+        const isCol = !!collapsed[cat.id];
+        const el = document.createElement("section");
+        el.className = "cat" + (isCol ? " collapsed" : "");
+        const head = document.createElement("div");
+        head.className = "cat-head";
+        head.innerHTML = `
+          <div class="cat-emoji">${cat.emoji}</div>
+          <h2>${cat.title}</h2>
+          <div class="cat-mini-bar"><i style="width:${all.length ? packedCount/all.length*100 : 0}%"></i></div>
+          <span class="cat-count">${packedCount}/${all.length} packed</span>
+          <svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>`;
+        head.addEventListener("click", () => { collapsed[cat.id] = !collapsed[cat.id]; localStorage.setItem("sierra-collapsed", JSON.stringify(collapsed)); render(); });
+        el.appendChild(head);
+
+        const wrap = document.createElement("div");
+        wrap.className = "items";
+        visible.forEach(it => {
+          const actor = it.packed ? it.packed_by : (it.got ? it.got_by : null);
+          const row = document.createElement("div");
+          row.className = "item" + (it.packed ? " done" : "");
+          row.innerHTML = `
+            <span class="item-label"></span>
+            <div class="who ${actor ? "show" : ""}" title="${actor ? actor + (it.packed ? " packed this" : " has this") : ""}">${actor ? avatarSVG(actor) : ""}</div>
+            <button class="toggle got ${it.got ? "on" : ""} ${canEdit ? "" : "ro"}" data-id="${it.id}" data-act="got"><span class="box">${it.got ? "✓" : ""}</span>Got it</button>
+            <button class="toggle packed ${it.packed ? "on" : ""} ${canEdit ? "" : "ro"}" data-id="${it.id}" data-act="packed"><span class="box">${it.packed ? "✓" : ""}</span>Packed</button>
+            ${it.is_custom && canEdit ? `<button class="del" data-id="${it.id}" data-act="del" title="Remove">✕</button>` : ""}`;
+          row.querySelector(".item-label").textContent = it.label;
+          wrap.appendChild(row);
+        });
+        if (canEdit) {
+          const add = document.createElement("div");
+          add.className = "add-row";
+          add.innerHTML = `<input type="text" placeholder="Add an item…" data-cat="${cat.id}" /><button data-cat="${cat.id}" data-act="add">Add</button>`;
+          wrap.appendChild(add);
+        }
+        el.appendChild(wrap);
+        list.appendChild(el);
+      });
+
+      document.getElementById("gotNum").textContent = totalGot;
+      document.getElementById("packedNum").textContent = totalPacked;
+      document.getElementById("totalNum").textContent = total;
+      document.getElementById("gotBar").style.width = (total ? totalGot/total*100 : 0) + "%";
+      document.getElementById("packedBar").style.width = (total ? totalPacked/total*100 : 0) + "%";
+      updateChrome();
+    }
+
+    // ---------- Edit gate (view-only by default) ----------
+    function updateChrome() {
+      document.getElementById("meChip").style.display = (canEdit && me) ? "flex" : "none";
+      document.getElementById("viewBanner").style.display = canEdit ? "none" : "flex";
+      document.getElementById("resetBtn").style.display = canEdit ? "" : "none";
+    }
+    function showGate() {
+      document.getElementById("gateErr").textContent = "";
+      document.getElementById("gateInput").value = "";
+      document.getElementById("gate").classList.remove("hidden");
+      setTimeout(() => document.getElementById("gateInput").focus(), 50);
+    }
+    function hideGate() { document.getElementById("gate").classList.add("hidden"); }
+    function tryUnlock() {
+      const v = document.getElementById("gateInput").value.trim().toLowerCase();
+      if (v === PASSCODE.toLowerCase()) {
+        canEdit = true; localStorage.setItem("sierra-can-edit", "yes");
+        hideGate(); render();
+        if (!(me && MEMBERS[me])) showPicker();
+      } else {
+        document.getElementById("gateErr").textContent = "That code didn't work — try again.";
+      }
+    }
+    function setupGate() {
+      document.getElementById("gateGo").addEventListener("click", tryUnlock);
+      document.getElementById("gateInput").addEventListener("keydown", e => { if (e.key === "Enter") tryUnlock(); });
+      document.getElementById("gateSkip").addEventListener("click", () => { hideGate(); updateChrome(); });
+      document.getElementById("editBtn").addEventListener("click", showGate);
+    }
+
+    // ---------- Mutations ----------
+    async function logHistory(it, action) {
+      const ev = { item_id: it.id, item_label: it.label, category: it.category, action, member: me };
+      await supabase.from("packing_history").insert(ev);
+    }
+    async function toggle(id, field) {
+      if (!canEdit) { showGate(); return; }
+      if (!me) { showPicker(); return; }
+      const it = items.find(i => i.id === id); if (!it) return;
+      const now = new Date().toISOString();
+      const val = !it[field];
+      const patch = {};
+      if (field === "got") {
+        patch.got = val; patch.got_by = val ? me : null; patch.got_at = val ? now : null;
+        if (!val && it.packed) { patch.packed = false; patch.packed_by = null; patch.packed_at = null; }
+      } else {
+        patch.packed = val; patch.packed_by = val ? me : null; patch.packed_at = val ? now : null;
+        if (val && !it.got) { patch.got = true; patch.got_by = me; patch.got_at = now; }
+      }
+      Object.assign(it, patch); render(); // optimistic
+      const { error } = await supabase.from("packing_items").update(patch).eq("id", id);
+      if (error) { setConn("save failed — retrying…", false); loadAll(); return; }
+      logHistory(it, field === "got" ? (val ? "got" : "ungot") : (val ? "packed" : "unpacked"));
+    }
+    async function addItem(catId, label) {
+      if (!canEdit) { showGate(); return; }
+      label = (label || "").trim(); if (!label || !me) { if (!me) showPicker(); return; }
+      const maxSort = items.reduce((m, i) => Math.max(m, i.sort_order), 0);
+      const row = { category: catId, label, is_custom: true, sort_order: maxSort + 1 };
+      const { data, error } = await supabase.from("packing_items").insert(row).select().single();
+      if (error) { setConn("couldn't add item", false); return; }
+      if (!items.find(i => i.id === data.id)) { items.push(data); items.sort((a,b)=>a.sort_order-b.sort_order); render(); }
+      logHistory(data, "added");
+    }
+    async function delItem(id) {
+      if (!canEdit) { showGate(); return; }
+      const it = items.find(i => i.id === id); if (!it) return;
+      items = items.filter(i => i.id !== id); render();
+      await supabase.from("packing_items").delete().eq("id", id);
+      logHistory(it, "removed");
+    }
+
+    // ---------- Interactions ----------
+    document.getElementById("list").addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-act]"); if (!btn) return;
+      const act = btn.dataset.act;
+      if (act === "got" || act === "packed") toggle(btn.dataset.id, act);
+      else if (act === "del") delItem(btn.dataset.id);
+      else if (act === "add") { const inp = document.querySelector(`input[data-cat="${btn.dataset.cat}"]`); addItem(btn.dataset.cat, inp.value); inp.value = ""; }
+    });
+    document.getElementById("list").addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && e.target.matches("input[data-cat]")) { addItem(e.target.dataset.cat, e.target.value); e.target.value = ""; }
+    });
+    document.getElementById("filters").addEventListener("click", (e) => {
+      const chip = e.target.closest(".chip"); if (!chip) return;
+      filter = chip.dataset.filter;
+      document.querySelectorAll(".chip").forEach(c => c.classList.toggle("active", c === chip));
+      render();
+    });
+    document.getElementById("resetBtn").addEventListener("click", async () => {
+      if (!canEdit) { showGate(); return; }
+      if (!me) { showPicker(); return; }
+      if (!confirm("Reset the WHOLE list for everyone? This clears all checkmarks (shared).")) return;
+      items.forEach(i => Object.assign(i, { got:false, got_by:null, got_at:null, packed:false, packed_by:null, packed_at:null }));
+      render();
+      await supabase.from("packing_items").update({ got:false, got_by:null, got_at:null, packed:false, packed_by:null, packed_at:null }).neq("id", "00000000-0000-0000-0000-000000000000");
+      await supabase.from("packing_history").insert({ item_label: "the whole list", action: "reset", member: me });
+    });
+
+    // ---------- History drawer ----------
+    function timeAgo(iso) {
+      const s = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
+      if (s < 60) return "just now";
+      const m = Math.floor(s/60); if (m < 60) return m + "m ago";
+      const h = Math.floor(m/60); if (h < 24) return h + "h ago";
+      const d = Math.floor(h/24); return d + "d ago";
+    }
+    const VERBS = { got:"got", ungot:"un-got", packed:"packed", unpacked:"unpacked", added:"added", removed:"removed", reset:"reset" };
+    function renderFeed() {
+      const feed = document.getElementById("feed");
+      if (!historyEvents.length) { feed.innerHTML = `<p style="color:var(--granite);text-align:center;padding:30px 10px;font-size:13px">No activity yet. Start checking things off!</p>`; return; }
+      feed.innerHTML = historyEvents.map(ev => `
+        <div class="ev">
+          <div class="ava-wrap">${MEMBERS[ev.member] ? avatarSVG(ev.member) : ""}</div>
+          <div class="txt"><span class="verb ${ev.action}">${ev.member}</span> ${VERBS[ev.action] || ev.action} <b>${escapeHtml(ev.item_label)}</b><span class="when">${timeAgo(ev.created_at)}</span></div>
+        </div>`).join("");
+    }
+    function escapeHtml(s){ const d=document.createElement("div"); d.textContent=s; return d.innerHTML; }
+    function openDrawer() {
+      drawerOpen = true; unread = 0; updateBadge();
+      document.getElementById("drawer").classList.add("open");
+      document.getElementById("scrim").classList.add("show");
+      renderFeed();
+    }
+    function closeDrawer() {
+      drawerOpen = false;
+      document.getElementById("drawer").classList.remove("open");
+      document.getElementById("scrim").classList.remove("show");
+    }
+    function updateBadge() {
+      const b = document.getElementById("histBadge");
+      if (unread > 0) { b.style.display = "grid"; b.textContent = unread > 9 ? "9+" : unread; }
+      else b.style.display = "none";
+    }
+    document.getElementById("historyBtn").addEventListener("click", openDrawer);
+    document.getElementById("drawerClose").addEventListener("click", closeDrawer);
+    document.getElementById("scrim").addEventListener("click", closeDrawer);
+
+    // ---------- Realtime ----------
+    supabase.channel("rt-items")
+      .on("postgres_changes", { event: "*", schema: "public", table: "packing_items" }, (p) => {
+        if (p.eventType === "DELETE") { items = items.filter(i => i.id !== p.old.id); }
+        else {
+          const idx = items.findIndex(i => i.id === p.new.id);
+          if (idx >= 0) items[idx] = p.new; else items.push(p.new);
+          items.sort((a,b) => a.sort_order - b.sort_order);
+        }
+        render();
+      }).subscribe();
+
+    supabase.channel("rt-history")
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "packing_history" }, (p) => {
+        if (historyEvents.find(e => e.id === p.new.id)) return;
+        historyEvents.unshift(p.new);
+        if (historyEvents.length > 80) historyEvents.pop();
+        renderFeed();
+        if (!drawerOpen && p.new.member !== me) { unread++; updateBadge(); }
+      }).subscribe();
+
+    // ---------- Boot ----------
+    renderPicker();
+    setupGate();
+    updateChrome();
+    loadAll();
+    if (canEdit) { if (me && MEMBERS[me]) setMe(me); else showPicker(); }
+    else { showGate(); }
+  </script>
+</body>
+</html>
