@@ -19,7 +19,7 @@
       background: radial-gradient(1200px 500px at 50% -120px, #FDF3DD 0%, rgba(253,243,221,0) 60%), var(--cream);
       -webkit-font-smoothing: antialiased;
     }
-    .bg-pattern { position: fixed; inset: 0; z-index: 0; opacity: 0.055; pointer-events: none; }
+    .bg-pattern { position: fixed; inset: 0; z-index: 0; opacity: 0.11; pointer-events: none; }
     .bg-pattern svg { display: block; width: 100%; height: 100%; }
     .wrap { max-width: 840px; margin: 0 auto; padding: 0 18px 90px; position: relative; z-index: 1; }
     .ava { width: 100%; height: 100%; display: block; }
@@ -426,7 +426,8 @@
 
     // ---------- Categories metadata ----------
     const CATEGORIES = [
-      { id: "clothing", title: "Clothing (layer up!)", emoji: "🧥" },
+      { id: "clothing",   title: "Clothing (layer up!)", emoji: "🧥", noun: "clothes" },
+      { id: "toiletries", title: "Toiletries & meds",    emoji: "🧴", noun: "toiletries" },
       { id: "sleep",    title: "Sleep & van comfort",  emoji: "🛏️" },
       { id: "kitchen",  title: "Kitchen & food",       emoji: "🍳" },
       { id: "outdoors", title: "Yosemite & outdoors",  emoji: "🥾" },
@@ -434,7 +435,7 @@
       { id: "docs",     title: "Docs & planning",      emoji: "🗺️" },
       { id: "extras",   title: "Space-savers & extras",emoji: "🎒" },
     ];
-    const PERSONAL = new Set(["clothing"]); // categories shown as a per-member carousel
+    const PERSONAL = new Set(["clothing", "toiletries"]); // categories shown as a per-member carousel
 
     // ---------- State ----------
     let items = [];
@@ -444,7 +445,7 @@
     let drawerOpen = false;
     const collapsed = JSON.parse(localStorage.getItem("sierra-collapsed") || "{}");
     let me = localStorage.getItem("sierra-member");
-    let clothingSlide = 0; // which member's clothing pane is showing
+    const slidePos = {}; // per personal-category: which member's pane is showing (cat.id -> index)
 
     const PASSCODE = "sierra2026"; // family edit code — change this to whatever you like (case-insensitive)
     let canEdit = localStorage.getItem("sierra-can-edit") === "yes";
@@ -465,7 +466,7 @@
       document.getElementById("meName").textContent = k;
       hidePicker();
       const idx = MEMBER_ORDER.indexOf(k);
-      if (idx >= 0) clothingSlide = idx;
+      if (idx >= 0) PERSONAL.forEach(catId => { slidePos[catId] = idx; });
       render();
     }
     document.getElementById("pickerGrid").addEventListener("click", (e) => {
@@ -511,6 +512,8 @@
       return `<div class="add-row"><input type="text" placeholder="Add an item…" data-cat="${catId}" data-owner="${escapeHtml(o)}" /><button data-cat="${catId}" data-owner="${escapeHtml(o)}" data-act="add">Add</button></div>`;
     }
     function carouselHTML(cat) {
+      const pos = slidePos[cat.id] || 0;
+      const noun = cat.noun || "items";
       const slides = MEMBER_ORDER.map(member => {
         const all = items.filter(i => i.category === cat.id && i.owner === member);
         const visible = all.filter(passesFilter);
@@ -520,51 +523,54 @@
         return `<div class="slide" data-owner="${member}">
           <div class="slide-head">
             <div class="ava-wrap">${avatarSVG(member)}</div>
-            <h3>${member}'s clothes</h3>
+            <h3>${member}'s ${noun}</h3>
             <div class="cat-mini-bar"><i style="width:${all.length ? packedCount/all.length*100 : 0}%"></i></div>
             <span class="cat-count">${packedCount}/${all.length}</span>
           </div>
           <div class="items">${rows}${addRow}</div>
         </div>`;
       }).join("");
-      const dots = MEMBER_ORDER.map((member, i) => `<button class="cdot${i === clothingSlide ? " on" : ""}" data-act="car-dot" data-idx="${i}" aria-label="${member}"></button>`).join("");
-      const allClothing = items.filter(i => i.category === cat.id);
-      const packedAll = allClothing.filter(i => i.packed).length;
-      return `<section class="cat carousel-cat">
+      const dots = MEMBER_ORDER.map((member, i) => `<button class="cdot${i === pos ? " on" : ""}" data-act="car-dot" data-cat="${cat.id}" data-idx="${i}" aria-label="${member}"></button>`).join("");
+      const allCat = items.filter(i => i.category === cat.id);
+      const packedAll = allCat.filter(i => i.packed).length;
+      return `<section class="cat carousel-cat" data-cat="${cat.id}">
         <div class="car-top">
           <div class="cat-emoji">${cat.emoji}</div>
           <h2>${cat.title}</h2>
-          <span class="cat-count">${packedAll}/${allClothing.length} packed</span>
+          <span class="cat-count">${packedAll}/${allCat.length} packed</span>
         </div>
         <div class="car-nav">
-          <button class="car-arrow" data-act="car-prev" aria-label="Previous person">‹</button>
+          <button class="car-arrow" data-act="car-prev" data-cat="${cat.id}" aria-label="Previous person">‹</button>
           <div class="car-dots">${dots}</div>
-          <button class="car-arrow" data-act="car-next" aria-label="Next person">›</button>
+          <button class="car-arrow" data-act="car-next" data-cat="${cat.id}" aria-label="Next person">›</button>
         </div>
-        <div class="carousel-track" id="carTrack">${slides}</div>
+        <div class="carousel-track" data-cat="${cat.id}">${slides}</div>
       </section>`;
     }
-    function updateDots() {
-      document.querySelectorAll(".cdot").forEach((d, i) => d.classList.toggle("on", i === clothingSlide));
+    function trackFor(catId) { return document.querySelector(`.carousel-track[data-cat="${catId}"]`); }
+    function updateDots(catId) {
+      const pos = slidePos[catId] || 0;
+      document.querySelectorAll(`.cdot[data-cat="${catId}"]`).forEach((d, i) => d.classList.toggle("on", i === pos));
     }
     function onCarScroll(e) {
       const track = e.currentTarget;
       if (track._animating) return;
+      const catId = track.dataset.cat;
       const idx = Math.round(track.scrollLeft / track.clientWidth);
-      if (idx !== clothingSlide) { clothingSlide = idx; updateDots(); }
+      if (idx !== (slidePos[catId] || 0)) { slidePos[catId] = idx; updateDots(catId); }
     }
     function setupCarousel() {
-      const track = document.getElementById("carTrack");
-      if (!track) return;
-      track.scrollLeft = clothingSlide * track.clientWidth;
-      track.addEventListener("scroll", onCarScroll, { passive: true });
+      document.querySelectorAll(".carousel-track").forEach(track => {
+        track.scrollLeft = (slidePos[track.dataset.cat] || 0) * track.clientWidth;
+        track.addEventListener("scroll", onCarScroll, { passive: true });
+      });
     }
-    function goSlide(idx) {
-      const track = document.getElementById("carTrack");
+    function goSlide(catId, idx) {
+      const track = trackFor(catId);
       if (!track) return;
       idx = Math.max(0, Math.min(MEMBER_ORDER.length - 1, idx));
-      clothingSlide = idx;
-      updateDots();
+      slidePos[catId] = idx;
+      updateDots(catId);
       const to = idx * track.clientWidth, from = track.scrollLeft, dist = to - from;
       if (!dist) return;
       track._animating = true;
@@ -700,9 +706,9 @@
       if (act === "got" || act === "packed") toggle(btn.dataset.id, act);
       else if (act === "del") delItem(btn.dataset.id);
       else if (act === "add") { const inp = document.querySelector(`input[data-cat="${btn.dataset.cat}"][data-owner="${btn.dataset.owner || ""}"]`); addItem(btn.dataset.cat, inp.value, btn.dataset.owner || null); inp.value = ""; }
-      else if (act === "car-prev") goSlide(clothingSlide - 1);
-      else if (act === "car-next") goSlide(clothingSlide + 1);
-      else if (act === "car-dot") goSlide(parseInt(btn.dataset.idx, 10));
+      else if (act === "car-prev") goSlide(btn.dataset.cat, (slidePos[btn.dataset.cat] || 0) - 1);
+      else if (act === "car-next") goSlide(btn.dataset.cat, (slidePos[btn.dataset.cat] || 0) + 1);
+      else if (act === "car-dot") goSlide(btn.dataset.cat, parseInt(btn.dataset.idx, 10));
     });
     document.getElementById("list").addEventListener("keydown", (e) => {
       if (e.key === "Enter" && e.target.matches("input[data-cat]")) { addItem(e.target.dataset.cat, e.target.value, e.target.dataset.owner || null); e.target.value = ""; }
